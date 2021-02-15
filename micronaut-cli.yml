@@ -1,0 +1,6 @@
+applicationType: function
+defaultPackage: groovycalamari.bots
+testFramework: spock
+sourceLanguage: java
+buildTool: gradle
+features: [app-name, aws-lambda, file-watch, file-watch-osx, gradle, java, logback, readme, shade, spock, yaml]
