@@ -7,17 +7,13 @@ import com.microchatbots.core.parser.SpaceParser;
 import com.microchatbots.core.parser.TextParser;
 import com.microchatbots.core.request.handler.CommandHandler;
 import com.microchatbots.telegrambots.api.BlockingTelegramBot;
-import com.microchatbots.telegrambots.api.DefaultTelegramBot;
-import com.microchatbots.telegrambots.api.TelegramBot;
 import com.microchatbots.telegrambots.api.TelegramBotConfiguration;
 import com.microchatbots.telegrambots.core.Message;
 import com.microchatbots.telegrambots.core.Update;
 import com.microchatbots.telegrambots.core.send.SendAudio;
 import com.microchatbots.telegrambots.core.send.SendMessage;
 import com.microchatbots.telegrambots.handler.TelegramRequestHandler;
-import io.micronaut.context.exceptions.ConfigurationException;
-import io.micronaut.http.client.exceptions.HttpClientResponseException;
-import io.reactivex.Single;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,27 +47,49 @@ public class EpisodeHandler extends CommandHandler<TelegramBotConfiguration, Upd
 
     @Override
     public Void handle(TelegramBotConfiguration telegramBotConfiguration, Update update) {
-        if (!podcast.getEpisodes().isEmpty()) {
-            Episode episode = podcast.getEpisodes().get(0);
-            Optional<Serializable> chatIdOptional = spaceParser.parseSpaceUniqueIdentifier(telegramBotConfiguration, update);
-            chatIdOptional.ifPresent(serializable -> {
-                String chatId = serializable.toString();
-                try {
-                    SendAudio sendAudio = composeAudio(chatId, episode);
-                    Message rsp = telegramBot.sendAudio(sendAudio);
-                    LOG.info("audio {} sent with response {}", sendAudio.toString(), rsp.toString());
-                    SendMessage message = composeMessage(chatId, episode);
-                    rsp = telegramBot.sendMessage(message);
-                    LOG.info("message {} sent with response {}", sendAudio.toString(), rsp.toString());
-                } catch (HttpClientResponseException e) {
-                    LOG.warn("could not send message");
-                }
-            });
+        if (podcast.getEpisodes().isEmpty()) {
+            return null;
         }
+        Episode episode = podcast.getEpisodes().get(0);
+        Optional<Serializable> chatIdOptional = spaceParser.parseSpaceUniqueIdentifier(telegramBotConfiguration, update);
+        chatIdOptional.ifPresent(serializable -> {
+            String chatId = serializable.toString();
+            sendAudio(chatId, episode);
+            sendMessage(chatId, episode);
+        });
         return null;
     }
 
-    private SendMessage composeMessage(String chatId, Episode episode) {
+    private void sendAudio(@NonNull String chatId, @NonNull Episode episode) {
+        SendAudio sendAudio = composeAudio(chatId, episode);
+        try {
+            Message rsp = telegramBot.sendAudio(sendAudio);
+            if (LOG.isInfoEnabled()) {
+                LOG.info("audio {} sent with response {}", sendAudio.toString(), rsp.toString());
+            }
+        } catch (Throwable t) {
+            if (LOG.isWarnEnabled()) {
+                LOG.warn("error received sending audio {} error {}", sendAudio.toString(), t.getMessage());
+            }
+        }
+    }
+
+    private void sendMessage(@NonNull String chatId, @NonNull Episode episode) {
+
+        SendMessage message = composeMessage(chatId, episode);
+        try {
+            Message rsp = telegramBot.sendMessage(message);
+            if (LOG.isInfoEnabled()) {
+                LOG.info("audio {} sent with response {}", message.toString(), rsp.toString());
+            }
+        } catch (Throwable t) {
+            if (LOG.isWarnEnabled()) {
+                LOG.warn("error received sending message {} error {}", message.toString(), t.getMessage());
+            }
+        }
+    }
+
+    private SendMessage composeMessage(@NonNull String chatId, @NonNull Episode episode) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText(cleanupHtml(episode.getShowNotes()));

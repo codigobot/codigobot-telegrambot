@@ -5,13 +5,11 @@ micronaut:
 telegram:
   bots:
     codigobot:
-      token: '${TOKEN}'
+      token: '${TOKEN:xxxyyyzzz}'
       at-username: '@PodcastCodigoBot'
       commands:
         help: 'como usar este bot'
         about: 'información sobre este bot'
-        info: 'devuelve el identificador de chat y user'
-        episode: 'escucha el último episodio'
 ---
 website:
   rss-url: 'https://feed.codigobot.com/rss.xml'

@@ -26,6 +26,8 @@ import com.microchatbots.telegrambots.handler.SendMessageCommandHandler;
 
 import javax.inject.Singleton;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Singleton
@@ -47,18 +49,18 @@ public class InfoCommandRequestHandler extends SendMessageCommandHandler {
 
     @Override
     protected String getText(TelegramBotConfiguration telegramBotConfiguration, Update update) {
-        String text = "";
         Optional<Serializable> chatId = spaceParser.parseSpaceUniqueIdentifier(telegramBotConfiguration, update);
+        List<String> paragraphs = new ArrayList<>();
         if (chatId.isPresent()) {
             String id = chatId.get().toString();
-            text += "chat id: " + id;
+            paragraphs.add("chat id: " + id);
         }
         Optional<Serializable> userId = userParser.parseUserUniqueIdentifier(telegramBotConfiguration, update);
 
         if (userId.isPresent()) {
             String id = userId.get().toString();
-            text += "user id: " + id;
+            paragraphs.add("user id: " + id);
         }
-        return text;
+        return String.join("\n", paragraphs);
     }
 }

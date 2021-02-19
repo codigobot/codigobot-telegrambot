@@ -8,31 +8,27 @@ version = projectVersion
 group "groovycalamari.bots"
 
 repositories {
-    mavenLocal()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     mavenCentral()
-    jcenter()
 }
 
 micronaut {
     testRuntime("spock2")
     processing {
         incremental(true)
-        annotations("com.example.*")
+        annotations("com.codigobot.telegram.*")
     }
 }
 
 dependencies {
-    implementation("com.microchatbots:micronaut-telegrambots-awslambda:1.0.0-M1") {
-        exclude group: 'io.micronaut.aws', module: 'micronaut-function-aws'
-    }
+    implementation("com.microchatbots:microchatbots-telegrambots-awslambda:1.0.0-SNAPSHOT")
     implementation("io.micronaut:micronaut-validation")
     implementation("io.micronaut:micronaut-runtime")
     implementation("javax.annotation:javax.annotation-api")
-    implementation("io.micronaut.aws:micronaut-function-aws")
     runtimeOnly("ch.qos.logback:logback-classic")
     testImplementation("io.micronaut:micronaut-function")
-    testImplementation("io.micronaut:micronaut-http-client")
-
+    testImplementation('org.codehaus.groovy:groovy-json')
+    testImplementation "io.micronaut:micronaut-http-server-netty"
 }
 
 java {

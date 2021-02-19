@@ -8,5 +8,8 @@
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
-    <logger name="groovycalamari.bots.l337" level="TRACE"/>
+    <logger name="com.microchatbots.telegrambots" level="TRACE"/>
+    <logger name="com.microchatbots.telegrambots.awslambda" level="TRACE"/>
+    <logger name="com.codigobot.telegram" level="TRACE"/>
+    <logger name="io.micronaut.http.client" level="TRACE"/>
 </configuration>

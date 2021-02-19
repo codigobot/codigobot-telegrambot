@@ -1,5 +1,8 @@
 package com.codigobot.telegram.rss
 
+import com.microchatbots.telegrambots.awslambda.Handler
+import spock.lang.AutoCleanup
+import spock.lang.Shared
 import spock.lang.Specification
 
 class PodcastParserSpec extends Specification {
